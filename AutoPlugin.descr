@@ -1,0 +1,10 @@
+# AutoPlugin
+Icone Auto Installer By Farham Support Plugin,Picon ( V1 : 30.03.20 )
+
+[NEW_API_V1]
+
+
+update_info :
+cur_ver_code : 1.1
+
+uninstall :
