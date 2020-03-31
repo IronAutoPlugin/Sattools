@@ -1,2 +1,2 @@
-# AutoPlugin
-AutoPlugin tool for Icone Iron series
+# AutoInstaller
+AutoInstaller tool for Icone Iron series
