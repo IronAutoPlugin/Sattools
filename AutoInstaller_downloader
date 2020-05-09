@@ -1,0 +1,15 @@
+#!/system/bin/sh
+
+PLGIP=/sdcard/AutoInstaller/install
+F1="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/AIP.tar"
+F2="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/IAP.tar"
+F3="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/AutoInstaller_Insatll"
+
+test ! -d $PLGIP && mkdir -p $PLGIP
+
+curl -Lks --connect-timeout 3 $F1  -o $PLGIP/AIP.tar
+curl -Lks --connect-timeout 3 $F2  -o $PLGIP/IAP.tar
+curl -Lks --connect-timeout 3 $F3 -o /sdcard/AutoInstaller_Insatll
+
+echo "All files downloaded successfully.\nPlease Close and run again \$cripter app."
+mv $0 $PLGIP
