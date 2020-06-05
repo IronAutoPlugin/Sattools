@@ -1,0 +1,117 @@
+#!/system/bin/sh
+EXTRACTFILES=true
+CONFIG=/sdcard/AutoInstaller/config.cfg
+PLGPO=/sdcard/plugin
+PLGP=/sdcard/AutoInstaller/
+PLGIP=/sdcard/AutoInstaller/install
+PLGBP=/sdcard/AutoInstaller/.bin
+CMDIN=/tmp/cmdin.tmp
+CMD1="#!/system/bin/sh\ntest -f $PLGIP/AutoInstaller.tar.gz && busybox tar zxf $PLGIP/AutoInstaller.tar.gz -C /mnt/plugin && chmod 777 /mnt/plugin/AutoInstaller* 2>&1 >/dev/null\necho 'AutoInstaller will install or reinstall.'"
+CMD2="#!/system/bin/sh\ntest -f $PLGIP/AUP.tar && busybox tar xf $PLGIP/AUP.tar -C /mnt/plugin && chmod 777 /mnt/plugin/AutoUninstaller* 2>&1 >/dev/null\necho 'Please Close \$cripter app and run plugin menu , then start AutoUninstaller plugin.'"
+CMD3="#!/system/bin/sh\necho \"Network Status : \\\c\"\ncase \"\$(curl -Is --max-time 2 https://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')\" in\n  [23]) echo \"Internet connectivity is up\";;\n  5) echo \"The web proxy won't let us through\";exit ;;\n  *) echo \"The network is down or very slow\";exit ;;\nesac"
+
+#RemoveOld
+#Ver1
+rm -f /sdcard/APG.tar
+rm -f /sdcard/APG.tar.gz
+rm -f /sdcard/0_AutoPlugin_Install
+#Ver2
+rm -f /sdcard/??P.tar
+rm -f /sdcard/AutoInstaller_Insatll
+rm -fr /sdcard/plugin 2>&1 >/dev/null
+test -d $PLGBP && rm -fr $PLGBP 2>&1 >/dev/null
+test -d $PLGP/cache && rm -fr $PLGP/cache 2>&1 >/dev/null
+rm -f /data/data/sites.mjwhitta.scripter/files/* 2>&1 >/dev/null
+rm -f /data/data/sites.mjwhitta.scripter/files/.bin* 2>&1 >/dev/null
+
+##MakeScripts
+#MakeDirectories
+test ! -d $PLGBP && mkdir -p $PLGBP $PLGBP/Plugins $PLGBP/ArchivedPlugins $PLGBP/Settings $PLGBP/Tools
+#ReadME
+test ! -f $PLGBP/README.md && busybox tail -30 $0 >$PLGBP/README.md
+#Config.cfg
+echo "# AutoInstaller Configure file (config.cfg)\n#\napp-with-data=false\nboot-auto-start-ftp=false\nboot-auto-update-softcam=false\nboot-auto-update-plugins=false\nboot-auto-update-archived-plugins=false\nstorage-media=/sdcard" >$CONFIG
+#MainMenu
+echo "#!/system/bin/sh\ncat $PLGBP/README.md">$PLGBP/00_AutoInstaller_About
+echo "#!/system/bin/sh\necho '$PLGBP/Settings' >/data/data/sites.mjwhitta.scripter/files/script_paths\necho 'scripter restart'>$CMDIN">$PLGBP/01_AutoInstaller_Settings
+echo "#!/system/bin/sh\necho '$PLGBP/Tools' >/data/data/sites.mjwhitta.scripter/files/script_paths\necho 'scripter restart'>$CMDIN">$PLGBP/02_Tools_Backup_Restore
+echo "#!/system/bin/sh\necho 'plugin-install'>$CMDIN\necho 'Local plugins will install. Please check from plugin section.'">$PLGBP/03_AutoPlugin_Local_Install
+echo "$CMD3\necho 'plugin-update-list plugins'>$CMDIN\necho 'Plugins list will update. Use AutoPlugin_ShowList to view them.'">$PLGBP/04_AutoPlugin_UpdateList
+echo "#!/system/bin/sh\necho '$PLGBP/Plugins' >/data/data/sites.mjwhitta.scripter/files/script_paths\necho 'scripter restart'>$CMDIN">$PLGBP/05_AutoPlugin_ShowList
+echo "$CMD3\necho 'plugin-update-list ArchivedPlugins'>$CMDIN\necho 'Archive plugins list will updat. Use AutoPlugin_ShowAList to view them.'">$PLGBP/06_AutoPlugin_UpdateArchiveList
+echo "#!/system/bin/sh\necho '$PLGBP/ArchivedPlugins' > /data/data/sites.mjwhitta.scripter/files/script_paths\necho 'scripter restart'>$CMDIN">$PLGBP/07_AutoPlugin_ShowArchiveList
+#Settings
+echo "#!/system/bin/sh\nIP=\$(ip route|cut -d' ' -f12)\necho 'run-services start' >$CMDIN\necho \"Services started on :\n\t\t\t\t\t\t\$IP:2021\"" >$PLGBP/Settings/01_Start_FTP_service
+echo "#!/system/bin/sh\necho 'run-services stop'>$CMDIN\necho 'Services stoped.'">$PLGBP/Settings/02_Stop_FTP_service
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\ncase \"\$(sed -ne '/boot-auto-start-ftp/ s/.*\= *//p' $CONFIG)\" in\n true) sed -i 's/boot-auto-start-ftp=.*/boot-auto-start-ftp=false/g' $CONFIG && echo 'FTP startup mode : Manual' ;;\nfalse) sed -i 's/boot-auto-start-ftp=.*/boot-auto-start-ftp=true/g' $CONFIG && echo 'FTP startup mode : Auto' ;;\n    *) exit ;;\nesac">$PLGBP/Settings/03_Set_startup_mode-FTP_service
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\ncase \"\$(sed -ne '/boot-auto-update-softcam/ s/.*\= *//p' $CONFIG)\" in\n true) sed -i 's/boot-auto-update-softcam=.*/boot-auto-update-softcam=false/g' $CONFIG && echo 'Update SoftCam.key at startup : Manual' ;;\nfalse) sed -i 's/boot-auto-update-softcam=.*/boot-auto-update-softcam=true/g' $CONFIG && echo 'Update SoftCam.key at startup : Auto' ;;\n    *) exit ;;\nesac">$PLGBP/Settings/04_Set_startup_mode-softcam_update
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\ncase \"\$(sed -ne '/boot-auto-update-plugins/ s/.*\= *//p' $CONFIG)\" in\n true) sed -i 's/boot-auto-update-plugins=.*/boot-auto-update-plugins=false/g' $CONFIG && echo 'Update Plugin list at startup : Manual' ;;\nfalse) sed -i 's/boot-auto-update-plugins=.*/boot-auto-update-plugins=true/g' $CONFIG && echo 'Update Plugin list at startup : Auto' ;;\n    *) exit ;;\nesac">$PLGBP/Settings/05_Set_startup_mode-Plugin_list_update
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\ncase \"\$(sed -ne '/boot-auto-update-archived-plugins/ s/.*\= *//p' $CONFIG)\" in\n true) sed -i 's/boot-auto-update-archived-plugins=.*/boot-auto-update-archived-plugins=false/g' $CONFIG && echo 'Update ArchivedPlugin list at startup : Manual' ;;\nfalse) sed -i 's/boot-auto-update-archived-plugins=.*/boot-auto-update-archived-plugins=true/g' $CONFIG && echo 'Update ArchivedPlugin list at startup : Auto' ;;\n    *) exit ;;\nesac">$PLGBP/Settings/06_Set_startup_mode-ArchivedPlugin_list_update
+echo "$CMD3\necho 'upgrade'>$CMDIN\necho 'AutoInstaller will upgrade to new version.'">$PLGBP/Settings/07_AutoInstaller_Upgrade
+echo "$CMD1">$PLGBP/Settings/08_AutoInstaller_Install_Reinstall
+echo "$CMD2">$PLGBP/Settings/09_AutoInstaller_Uninstall
+#Tools
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\nsed -i 's/storage-media=.*/storage-media=\/sdcard/g' \$CONFIG && echo \"Storage media set to : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG)\"">$PLGBP/Tools/01_Set_storage_media_to_Internal_shared_storage
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\nsed -i 's/storage-media=.*/storage-media=\/storage\/sda1/g' \$CONFIG && echo \"Storage media set to : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG)\"">$PLGBP/Tools/02_Set_storage_media_to_USB3_flash_drive
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\nsed -i 's/storage-media=.*/storage-media=\/storage\/sdb1/g' \$CONFIG && echo \"Storage media set to : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG)\"">$PLGBP/Tools/03_Set_storage_media_to_USB2_flash_drive
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\nsed -i 's/storage-media=.*/storage-media=\/storage\/mmcblk1p1/g' \$CONFIG && echo \"Storage media set to : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG)\"">$PLGBP/Tools/04_Set_storage_media_to_MicroSD_memory_card
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\ncase \"\$(sed -ne '/app-with-data/ s/.*\= *//p' $CONFIG)\" in\n true) sed -i 's/app-with-data=.*/app-with-data=false/g' $CONFIG && echo 'Backup and Restore user application with data : Off' ;;\nfalse) sed -i 's/app-with-data=.*/app-with-data=true/g' $CONFIG && echo 'Backup and Restore user application with data : On' ;;\n    *) exit ;;\nesac">$PLGBP/Tools/05_Set_backup_mode-BackupRestore_app_with_data
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\necho 'backup-restore backup-app'>$CMDIN\necho \"All Applications will backup to : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG).\"">$PLGBP/Tools/06_Backup_user_installed_android_application
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\necho 'backup-restore backup-plugin'>$CMDIN\necho \"All plugins will backup to : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG).\"">$PLGBP/Tools/07_Backup_all_installed_plugins
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\necho 'backup-restore backup-picon'>$CMDIN\necho \"All picons will backup to : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG).\"">$PLGBP/Tools/08_Backup_all_picons
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\necho 'backup-restore restore-app'>$CMDIN\necho \"Backed up applications will restore from : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG).\"">$PLGBP/Tools/09_Restore_android_application
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\necho 'backup-restore restore-plugin'>$CMDIN\necho \"Backed up plugins will restore from : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG).\"">$PLGBP/Tools/10_Restore_plugins
+echo "#!/system/bin/sh\nCONFIG=/sdcard/AutoInstaller/config.cfg\necho 'backup-restore restore-picon'>$CMDIN\necho \"Backed up picons will restore from : \$(sed -ne '/storage-media/ s/.*\= *//p' \$CONFIG).\"">$PLGBP/Tools/11_Restore_picons
+#ReturnMainMenu
+echo "#!/system/bin/sh\necho $PLGBP > /data/data/sites.mjwhitta.scripter/files/script_paths\necho 'scripter restart'>$CMDIN">$PLGBP/Plugins/00_Show_Main_Menu
+cp $PLGBP/Plugins/00_Show_Main_Menu $PLGBP/ArchivedPlugins
+cp $PLGBP/Plugins/00_Show_Main_Menu $PLGBP/Settings
+cp $PLGBP/Plugins/00_Show_Main_Menu $PLGBP/Tools
+#SetNooutput
+for f in  ArchivedPlugins_00_Show_Main_Menu Plugins_00_Show_Main_Menu Tools_00_Show_Main_Menu Settings_00_Show_Main_Menu \
+		.bin_01_AutoInstaller_Settings .bin_02_Tools_Backup_Restore .bin_05_AutoPlugin_ShowList .bin_07_AutoPlugin_ShowArchiveList
+do echo '0\n\n1' >>/data/data/sites.mjwhitta.scripter/files/$f ; done
+
+#ExctractFiles
+EXTRACT(){
+test ! -f $PLGIP/AIP.tar && ERR=false && echo "File not exists : $PLGIP/AIP.tar ." 
+test ! -f $PLGIP/IAP.tar && ERR=false && echo "File not exists : $PLGIP/IAP.tar ."
+test -f $PLGIP/AIP.tar && busybox tar xf $PLGIP/AIP.tar -C /mnt/plugin
+test -f /mnt/plugin/AutoInstaller && chmod 777 /mnt/plugin/AutoInstaller* 2>&1 >/dev/null
+} ; [ "$EXTRACTFILES" == "true" ] && EXTRACT
+
+#EndSetup
+echo $PLGBP > /data/data/sites.mjwhitta.scripter/files/script_paths
+echo "Insatallation complete successful. Please Close \$cripter app and run plugin menu , then start AutoInstaller plugin."
+exit
+
+# Icone-Iron-AutoInstaller
+## By Farhamxp <farhamxp@gamil.com>
+Project Home :https://github.com/IronAutoPlugin
+Project News channel : <https://t.me/IronAutoPlugin>   
+Installation files and Guide : <https://github.com/IronAutoPlugin/AutoInstaller>
+  
+### Thechnical Info : <https://github.com/IronAutoPlugin/Iron-Plugins/wiki>
+   
+Note : Iron-Plugins repository has two branchs.
+Plugins branch has the last version of each plugin and   
+ArchivedPlugin branch has Archives of plugins.
+#### These Plugins used in AutoInstaller scripts. It download and install plugins directly from this repository.    
+### All plugins uploaded or maked by dear Mohammad Nasr and other friends.
+
+If everyone wants to create new fork of this repository, it's not problem. But that's fork unusable in AutoInstaller.  
+Dear plugin creators : If your output files maked with Thechnical Info structure, that,s usable with AutoInstaller.  
+Please tell me to share them with other Icone iron users.  
+
+## License:   
+AutoInstaller is licensed under the GNU General Public License (GPL).  This means that is "free software".  
+That is, not only can AutoInstaller be downloaded and used at no cost, its source code is also available to be analyzed, modified, and contributed to.  
+For more information on the GNU GPL see the GNU website here.<http://www.gnu.org/licenses/gpl-3.0.txt>
+
+## Credits:  
+The basic concept of these credits is that the collaborative nature of open-source community has allowed myself to making AutoInstaller as a very nice tool.  
+  
+## SPECIAL THANKS TO SPECIAL PEOPLE :  
+### Mohammad Nasr (MNASR,popking159) <https://oscambinaries.blogspot.com>   
+### Miles Whittaker (mjwhitta) <https://mj.whitta.dev>
+### Shahab(t.me/Sky4533)
