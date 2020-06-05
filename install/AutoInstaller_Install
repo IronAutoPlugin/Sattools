@@ -1,6 +1,5 @@
 #!/system/bin/sh
-exit
-EXTRACTFILES=true
+EXTRACTFILES=tre
 CONFIG=/sdcard/AutoInstaller/config.cfg
 PLGPO=/sdcard/plugin
 PLGP=/sdcard/AutoInstaller/

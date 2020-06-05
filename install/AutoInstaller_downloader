@@ -5,7 +5,7 @@ INSTALLER=AutoInstaller_Install
 PLGC=/sdcard/AutoInstaller/cache
 PLGI=/sdcard/AutoInstaller/install
 SUMU="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/cksum"
-U1="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/AutoInstaller_Insatll"
+U1="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/AutoInstaller_Install"
 U2="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/AIP.tar"
 U3="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/IAP.tar"
 
