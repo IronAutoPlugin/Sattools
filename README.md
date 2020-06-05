@@ -15,7 +15,7 @@
 # Installation:
 1- If you have already installed $scripter_2.4signed.apk, uninstall it.   
 2- Go to : https://github.com/IronAutoPlugin/AutoInstaller   
-3- Download and install AutoInstaller.apk.   
+3- Download and install AutoInstaller.apk.(Downloading all files not required.)   
 4- Run AutoInstaller.apk, and select "Download Installer" for downloading AutoInstaller_downloader.   
 5- After AutoInstaller_downloader dwonloaded, select "Download Application" for downloading and installing $scripter_2.4signed.apk. Wait until Scripter download.   
 6- Install Scripter, after it downloaded.   
