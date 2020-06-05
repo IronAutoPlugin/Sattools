@@ -23,7 +23,7 @@ test ! -d $PLGI && mkdir -p $PLGI && touch $PLGI/cksum
 curl -Lks --connect-timeout 5 $SUMU -o $PLGC/cksum
 DIFF=$(busybox diff $PLGI/cksum $PLGC/cksum|wc -c)
 if [ $DIFF != 0 ] ; then
-curl -Lks --connect-timeout 5 $U1 -o $PLGI/AutoInstaller_Insatll
+curl -Lks --connect-timeout 5 $U1 -o $PLGI/AutoInstaller_Install
 curl -Lks --connect-timeout 5 $U2 -o $PLGI/AIP.tar
 curl -Lks --connect-timeout 5 $U3 -o $PLGI/IAP.tar
 fi
