@@ -1,13 +1,13 @@
 #!/system/bin/sh
 # By farhamxp for icone
-Ver=3.2
+Ver=3.3
 INSTALLER=AutoInstaller_Install
 PLGC=/sdcard/AutoInstaller/cache
 PLGI=/sdcard/AutoInstaller/install
-SUMU="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/cksum"
-U1="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/AutoInstaller_Install"
-U2="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/AIP.tar"
-U3="https://github.com/IronAutoPlugin/AutoInstaller/raw/master/install/IAP.tar"
+SUMU="https://raw.githubusercontent.com/IronAutoPlugin/AutoInstaller/master/install/cksum"
+U1="https://raw.githubusercontent.com/IronAutoPlugin/AutoInstaller/master/install/AutoInstaller_Install"
+U2="https://raw.githubusercontent.com/IronAutoPlugin/AutoInstaller/master/install/AIP.tar"
+U3="https://raw.githubusercontent.com/IronAutoPlugin/AutoInstaller/master/install/IAP.tar"
 
 if [ ! -f /sdcard/AutoUninstaller ] ; then 
 echo "#!/system/bin/sh\npkill run.sh\nsed -i '/\/data\/iap\/run\.sh \&/d' /data/plugin/autorun.sh\npkill run.sh\nrm -fr /data/iap\nrm -f /data/data/sites.mjwhitta.scripter/files/*\nrm -f /data/plugin/AutoUninstaller*\ndate>/sdcard/AutoUninstaller">/mnt/plugin/AutoUninstaller
