@@ -20,8 +20,9 @@
 5- After AutoInstaller_downloader dwonloaded, select "Download Application" for downloading and installing $scripter_2.4signed.apk. Wait until Scripter download.   
 6- Install Scripter, after it downloaded.   
 7- Run $cripter app, then execute AutoInstaller_downloader. Follow instructions to installation finished successful.    
+
    
    
-
-
+#  Releases:
+https://github.com/IronAutoPlugin/AutoInstaller/releases
 
